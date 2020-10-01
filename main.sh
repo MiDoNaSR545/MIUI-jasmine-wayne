@@ -11,71 +11,81 @@ STOCKTAR=$2
 OUTP=$CURRENTDIR/out
 TOOLS=$CURRENTDIR/tools
 
+echo "Fail on all errors enabled"
 set -e
 
+echo "Removing $OUTP"
 rm -rf $OUTP || true
 mkdir $OUTP
 chown $CURRENTUSER:$CURRENTUSER $OUTP
+echo "Copying zip to $OUTP"
 cp -Raf $CURRENTDIR/zip $OUTP/
 
+echo "Unzipping $PORTZIP"
 unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat.br vendor.new.dat.br
+echo "Unzipping jasmine_global_images"
 tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
+echo "Moving system to $OUTP"
 mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
+echo "Moving vendor to $OUTP"
 mv jasmine_global_images*/images/system.img $OUTP/system.img
  
- 
+echo "Converting sparse source system image to raw image"
 simg2img $OUTP/system.img $OUTP/systema2.img
+echo "Converting sparse source vendor image to raw image"
 simg2img $OUTP/vendor.img $OUTP/vendora2.img
-
+echo "Decompressing port system.new.dat.br"
 brotli -j -v -d $OUTP/system.new.dat.br -o $OUTP/system.new.dat
+echo "Decompressing port vendor.new.dat.br"
 brotli -j -v -d $OUTP/vendor.new.dat.br -o $OUTP/vendor.new.dat
+echo "Converting port systm.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/system.transfer.list $OUTP/system.new.dat $OUTP/systemport.img
+echo "Converting port vendor.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUTP/vendorport.img
+echo "Cleaning up unnecessary files from $OUTP"
 rm $OUTP/vendor.img $OUTP/system.img $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
 
-
-unalias cp 
+echo "Making directories"
 mkdir $PSYSTEM 
 mkdir $PVENDOR 
 mkdir $SVENDOR 
 mkdir $SSYSTEM 
+echo "Mounting port system to $PSYSTEM"
 mount -o rw,noatime $OUTP/systemport.img $PSYSTEM
+echo "Mounting port vendor to $PVENDOR"
 mount -o rw,noatime $OUTP/vendorport.img $PVENDOR
+echo "Mounting source system to $SSYSTEM"
 mount -o rw,noatime $OUTP/systema2.img $SSYSTEM
+echo "Mounting source vendor to $SVENDOR"
 mount -o rw,noatime $OUTP/vendora2.img $SVENDOR
 
-
-#BUILD BOOT IMAGE
-PATCHDATE=$(sudo grep ro.build.version.security_patch= $PSYSTEM/system/build.prop | sed "s/ro.build.version.security_patch=//g"; )
-if [[ -z $PATCHDATE ]]
-then
-echo "failed to find security patch date, aborting" && exit
-fi
-su -c "$CURRENTDIR/buildbootimage.sh $PATCHDATE $SOURCEROM $OUTP $CURRENTDIR" $CURRENTUSER
-
+echo "Patching cache"
 rm -rf $PSYSTEM/cache
 cp -af $SSYSTEM/cache $PSYSTEM/
 
+echo "Creating addon d"
 mkdir $PSYSTEM/system/addon.d
 setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/addon.d
 chmod 755 $PSYSTEM/system/addon.d
 
+echo "Patching bootctl"
 cp -f $FILES/bootctl $PSYSTEM/system/bin/
 chmod 755 $PSYSTEM/system/bin/bootctl
 setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/bin/bootctl
 
+echo "Copying libs"
 cp -af $SSYSTEM/system/lib/vndk-29/android.hardware.boot@1.0.so $PSYSTEM/system/lib/vndk-29/android.hardware.boot@1.0.so
 cp -af $SSYSTEM/system/lib64/vndk-29/android.hardware.boot@1.0.so $PSYSTEM/system/lib64/vndk-29/android.hardware.boot@1.0.so
 cp -af $SSYSTEM/system/lib64/android.hardware.boot@1.0.so $PSYSTEM/system/lib64/android.hardware.boot@1.0.so
-
+echo "Adding watermark"
 cp -af $SVENDOR/etc/MIUI_DualCamera_watermark.png $PVENDOR/etc/MIUI_DualCamera_watermark.png
-
+echo "Removing updater"
 rm -rf $PSYSTEM/system/priv-app/Updater
-
+echo "Renaming device features xml"
 mv $PSYSTEM/system/etc/device_features/lavender.xml $PSYSTEM/system/etc/device_features/jasmine_sprout.xml
 mv $PVENDOR/etc/device_features/lavender.xml $PVENDOR/etc/device_features/jasmine_sprout.xml
 
-
+echo "Patching build prop"
 sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /persist.vendor.camera.HAL3.enabled=/c\persist.vendor.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=Mi A2
@@ -103,29 +113,27 @@ sed -i "/ro.miui.has_cust_partition=/c\ro.miui.has_cust_partition=false" $PSYSTE
 
 
 sed -i "/ro.product.vendor.model=/c\ro.product.vendor.model=Mi A2
-/ro.product.vendor.name=/c\ro.product.vendor.name=jasmine
-/ro.product.vendor.device=/c\ro.product.vendor.device=jasmine" $PVENDOR/build.prop
+/ro.product.vendor.name=/c\ro.product.vendor.name=jasmine_sprout
+/ro.product.vendor.device=/c\ro.product.vendor.device=jasmine_sprout" $PVENDOR/build.prop
 
 
 sed -i "/ro.product.odm.device=/c\ro.product.odm.device=jasmine_sprout
 /ro.product.odm.model=/c\ro.product.odm.model=Mi A2
 /ro.product.odm.device=/c\ro.product.odm.device=jasmine_sprout
-/ro.product.odm.name=/c\ro.product.odm.name=jasmine" $PVENDOR/odm/etc/build.prop
+/ro.product.odm.name=/c\ro.product.odm.name=jasmine_sprout" $PVENDOR/odm/etc/build.prop
 
-
+echo "Fixing vendor firmware"
 rm -rf $PVENDOR/firmware
 cp -Raf $SVENDOR/firmware $PVENDOR/firmware
 
-
-
-
 #VENDOR
+echo "Patching fstab"
 cp -f $FILES/fstab.qcom $PVENDOR/etc/
 chmod 644 $PVENDOR/etc/fstab.qcom
 setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/fstab.qcom
 chown -hR root:root $PVENDOR/etc/fstab.qcom
 
-
+echo "Fixing vendor libs"
 cp -af $SVENDOR/bin/hw/android.hardware.boot@1.0-service $PVENDOR/bin/hw/android.hardware.boot@1.0-service
 cp -af $SVENDOR/etc/init/android.hardware.boot@1.0-service.rc $PVENDOR/etc/init/android.hardware.boot@1.0-service.rc
 cp -af $SVENDOR/lib/hw/bootctrl.sdm660.so $PVENDOR/lib/hw/bootctrl.sdm660.so
@@ -133,7 +141,7 @@ cp -af $SVENDOR/lib/hw/android.hardware.boot@1.0-impl.so $PVENDOR/lib/hw/android
 cp -af $SVENDOR/lib64/hw/bootctrl.sdm660.so $PVENDOR/lib64/hw/bootctrl.sdm660.so
 cp -af $SVENDOR/lib64/hw/android.hardware.boot@1.0-impl.so $PVENDOR/lib64/hw/android.hardware.boot@1.0-impl.so
 
-
+echo "Patching HAL"
 sed -i "58 i \    <hal format=\"hidl\">
 58 i \        <name>android.hardware.boot</name>
 58 i \        <transport>hwbinder</transport>
@@ -146,25 +154,26 @@ sed -i "58 i \    <hal format=\"hidl\">
 58 i \    </hal>" $PVENDOR/etc/vintf/manifest.xml
 
 #KEYMASTER
+echo "Keymaster"
 rm -f $PVENDOR/etc/init/android.hardware.keymaster@4.0-service-qti.rc
 cp -af $SVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc $PVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc
 
 sed -i "181 s/        <version>4.0<\/version>/        <version>3.0<\/version>/g
 s/4.0::IKeymasterDevice/3.0::IKeymasterDevice/g" $PVENDOR/etc/vintf/manifest.xml
 
-
+echo "Parsing sensors"
 rm -rf $PVENDOR/etc/sensors
 cp -Raf $SVENDOR/etc/sensors $PVENDOR/etc/sensors
 cp -af $SVENDOR/etc/camera/camera_config.xml $PVENDOR/etc/camera/camera_config.xml
 cp -af $SVENDOR/etc/camera/csidtg_camera.xml $PVENDOR/etc/camera/csidtg_camera.xml
 cp -af $SVENDOR/etc/camera/csidtg_chromatix.xml $PVENDOR/etc/camera/camera_chromatix.xml
-
+echo "Patching vendor watermark"
 cp -af $SVENDOR/lib/libMiWatermark.so $PVENDOR/lib/libMiWatermark.so
 cp -af $SVENDOR/lib/libdng_sdk.so $PVENDOR/lib/libdng_sdk.so
 cp -af $SVENDOR/lib/libvidhance_gyro.so $PVENDOR/lib/libvidhance_gyro.so
 cp -af $SVENDOR/lib/libvidhance.so $PVENDOR/lib/
 
-
+echo "Adding camera libs"
 cp -af $SVENDOR/lib/libmmcamera* $PVENDOR/lib/
 
 cp -af $SVENDOR/lib64/libmmcamera* $PVENDOR/lib64/
@@ -173,6 +182,7 @@ cp -f $SVENDOR/lib/hw/camera.sdm660.so $PVENDOR/lib/hw/
 
 
 #BOOTANIMATION
+
 cp -f $FILES/bootanimation.zip $PSYSTEM/system/media/bootanimation.zip
 chmod 644 $PSYSTEM/system/media/bootanimation.zip
 chown root:root $PSYSTEM/system/media/bootanimation.zip
