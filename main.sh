@@ -182,13 +182,8 @@ cp -f $SVENDOR/lib/hw/camera.sdm660.so $PVENDOR/lib/hw/
 
 
 #BOOTANIMATION
-
-cp -f $FILES/bootanimation.zip $PSYSTEM/system/media/bootanimation.zip
-chmod 644 $PSYSTEM/system/media/bootanimation.zip
-chown root:root $PSYSTEM/system/media/bootanimation.zip
-setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/media/bootanimation.zip
-
-
+echo "Skipping bootanimation patch"
+echo "Patching fingerprint"
 cp -af $FILES/fingerprint/app/FingerprintExtensionService/FingerprintExtensionService.apk $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
 setfattr -h -n security.selinux -v u:object_r:vendor_app_file:s0 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
 chmod 644 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
@@ -236,7 +231,7 @@ cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout
 cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
 
 #GOODSEX
-
+echo "Adding GoodixBiometrics"
 sed -i "477 c\        <name>vendor.goodix.hardware.fingerprint</name>" $PVENDOR/etc/vintf/manifest.xml
 sed -i "479 c\        <version>1.0</version>
 481 c\            <name>IGoodixBiometricsFingerprint</name>
@@ -247,11 +242,11 @@ sed -i "479 c\        <version>1.0</version>
 488d
 489d" $PVENDOR/etc/vintf/manifest.xml
 
-
+echo "Adding firmware"
 rm -rf $PSYSTEM/system/etc/firmware || true
-cp -Raf $SSYSTEM/system/etc/firmware/* $PVENDOR/firmware/ || true
+echo "Skipping source firmware add"
 
-
+echo "Patching vendor wifi HAL"
 cp -f $OUTP/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
@@ -263,6 +258,7 @@ chown -hR root:root $PVENDOR/lib/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
 
 #system/etc/device_features
+echo "Editing system device features"
 sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
 /battery_capacity_typ/c\    <string name=\"battery_capacity_typ\">3010<\/string>
 /support_camera_4k_quality/c\    <bool name=\"support_camera_4k_quality\">true<\/bool>
@@ -275,6 +271,7 @@ sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/b
 
 
 #vendor/etc/device_features
+echo "Editing vendor device features"
 sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
 /battery_capacity_typ/c\    <string name=\"battery_capacity_typ\">3010<\/string>
 /support_camera_4k_quality/c\    <bool name=\"support_camera_4k_quality\">true<\/bool>
@@ -287,11 +284,13 @@ sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/b
 
 
 #AUDIO
+echo "Parsing audio"
 rm -rf $PVENDOR/etc/acdbdata
 cp -Raf $SVENDOR/etc/acdbdata $PVENDOR/etc/acdbdata
 
 
 #statusbar/corner
+echo "Adding statusbar and corner fixes"
 rm -rf $PVENDOR/app/NotchOverlay
 cp -f $FILES/overlay/DevicesOverlay.apk $PVENDOR/overlay/DevicesOverlay.apk
 cp -f $FILES/overlay/DevicesAndroidOverlay.apk $PVENDOR/overlay/DevicesAndroidOverlay.apk
@@ -303,6 +302,7 @@ setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/ov
 setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesAndroidOverlay.apk
 
 #readingmode 
+echo "Fixing reading mode"
 cp -f $FILES/readingmode/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
 cp -f $FILES/readingmode/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
 chmod 644 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
@@ -312,7 +312,7 @@ chown -hR root:root $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_d
 setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
 setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
 
-
+echo "Fixing init rc"
 #add this to line 452 at $PVENDOR/etc/init/hw/init.qcom.rc
 #    exec_background u:object_r:system_file:s0 -- /system/bin/bootctl mark-boot-successful
 sed -i "452 i \    exec_background u:object_r:system_file:s0 -- /system/bin/bootctl mark-boot-successful" $PVENDOR/etc/init/hw/init.qcom.rc
@@ -326,40 +326,53 @@ sed -i "124 i \
 124 i \    # DT2W node
 124 i \    chmod 0660 /sys/touchpanel/double_tap
 124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.rc
-
+echo "Getting romversion and patching updater script"
 ROMVERSION=$(grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
 sed -i "s%DATE%$(date +%d/%m/%Y)%g
 s/ROMVERSION/$ROMVERSION/g" $OUTP/zip/META-INF/com/google/android/updater-script
-
+echo "Unmounting port system"
 umount $PSYSTEM
+echo "Unmounting port vendor"
 umount $PVENDOR
+echo "Unmounting source system"
 umount $SSYSTEM
+echo "Unmounting source vendor"
 umount $SVENDOR
+echo "Removing mount points"
 rmdir $PSYSTEM
 rmdir $PVENDOR
 rmdir $SSYSTEM
 rmdir $SVENDOR
-
+echo "Scanning system for errors"
 e2fsck -y -f $OUTP/systemport.img
+echo "Resizing system"
 resize2fs $OUTP/systemport.img 786432
 
-
+echo "Converting port system to sparse image"
 img2simg $OUTP/systemport.img $OUTP/sparsesystem.img
 rm $OUTP/systemport.img
+echo "Generating DAT files for system"
 $TOOLS/img2sdat/img2sdat.py -v 4 -o $OUTP/zip -p system $OUTP/sparsesystem.img
 rm $OUTP/sparsesystem.img
+echo "Converting port vendor to sparse image"
 img2simg $OUTP/vendorport.img $OUTP/sparsevendor.img
 rm $OUTP/vendorport.img
+echo "Generating DAT files for vendor"
 $TOOLS/img2sdat/img2sdat.py -v 4 -o $OUTP/zip -p vendor $OUTP/sparsevendor.img
 rm $OUTP/sparsevendor.img
+echo "Compressing system.new.dat"
 brotli -j -v -q 6 $OUTP/zip/system.new.dat
+echo "Compressing vendor.new.dat"
 brotli -j -v -q 6 $OUTP/zip/vendor.new.dat
 
 cd $OUTP/zip
+echo "Zipping final ROM"
 zip -ry $OUTP/10_MIUI_12_jasmine_sprout_$ROMVERSION.zip *
 cd $CURRENTDIR
+echo "Removing all unnecessary files"
 rm -rf $OUTP/zip
 chown -hR $CURRENTUSER:$CURRENTUSER $OUTP
 
 rm $OUTP/systema2.img
 rm $OUTP/vendora2.img
+echo "Done!"
