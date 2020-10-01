@@ -2,8 +2,7 @@ SVENDOR=/mnt/vendora2
 SSYSTEM=/mnt/systema2
 PVENDOR=/mnt/vendorport
 PSYSTEM=/mnt/systemport
-CURRENTUSER=$4
-SOURCEROM=$3
+CURRENTUSER=$3
 SCRIPTDIR=$(readlink -f "$0")
 CURRENTDIR=$(dirname "$SCRIPTDIR")
 FILES=$CURRENTDIR/files
@@ -23,7 +22,6 @@ unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat
 tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
 mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
 mv jasmine_global_images*/images/system.img $OUTP/system.img
-rm -rf jasmine_global_images*
  
  
 simg2img $OUTP/system.img $OUTP/systema2.img
@@ -36,11 +34,11 @@ $TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUT
 rm $OUTP/vendor.img $OUTP/system.img $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
 
 
-unalias cp || true
-mkdir $PSYSTEM || true
-mkdir $PVENDOR || true
-mkdir $SVENDOR || true
-mkdir $SSYSTEM || true
+unalias cp 
+mkdir $PSYSTEM 
+mkdir $PVENDOR 
+mkdir $SVENDOR 
+mkdir $SSYSTEM 
 mount -o rw,noatime $OUTP/systemport.img $PSYSTEM
 mount -o rw,noatime $OUTP/vendorport.img $PVENDOR
 mount -o rw,noatime $OUTP/systema2.img $SSYSTEM
