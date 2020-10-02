@@ -89,14 +89,14 @@ echo "Patching build prop"
 sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /persist.vendor.camera.HAL3.enabled=/c\persist.vendor.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=Mi A2
-/ro.build.id=/c\ro.build.id=MIUI 12 by Nebrassy
+/ro.build.id=/c\ro.build.id=MIUI 12 by retrowallflower
 /persist.vendor.camera.exif.model=/c\persist.vendor.camera.exif.model=Mi A2
-/ro.product.name=/c\ro.product.name=jasmine
+/ro.product.name=/c\ro.product.name=jasmine_sprout
 /ro.product.device=/c\ro.product.device=jasmine_sprout
-/ro.build.product=/c\ro.build.product=jasmine
+/ro.build.product=/c\ro.build.product=jasmine_sprout
 /ro.product.system.device=/c\ro.product.system.device=jasmine_sprout
 /ro.product.system.model=/c\ro.product.system.model=Mi A2
-/ro.product.system.name=/c\ro.product.system.name=jasmine
+/ro.product.system.name=/c\ro.product.system.name=jasmine_sprout
 /ro.miui.notch=/c\ro.miui.notch=0
 /sys.paper_mode_max_level=/c\sys.paper_mode_max_level=32
 \$ i sys.tianma_nt36672_offset=12
@@ -247,12 +247,12 @@ rm -rf $PSYSTEM/system/etc/firmware || true
 echo "Skipping source firmware add"
 
 echo "Patching vendor wifi HAL"
-cp -f ~/MIUI-jasmeme-lavender/files/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
+cp -f /home/sebastian1/MIUI-jasmeme-lavender/files/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
 
-cp -f ~/MIUI-jasmeme-lavender/files/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
+cp -f /home/sebastian1/MUI-jasmeme-lavender/files/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
 chmod 644 $PVENDOR/lib/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
