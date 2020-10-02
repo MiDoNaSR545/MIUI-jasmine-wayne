@@ -14,51 +14,6 @@ TOOLS=$CURRENTDIR/tools
 echo "Fail on all errors enabled"
 set -e
 
-echo "Removing $OUTP"
-rm -rf $OUTP || true
-mkdir $OUTP
-chown $CURRENTUSER:$CURRENTUSER $OUTP
-echo "Copying zip to $OUTP"
-cp -Raf $CURRENTDIR/zip $OUTP/
-
-echo "Unzipping $PORTZIP"
-unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat.br vendor.new.dat.br
-echo "Unzipping jasmine_global_images"
-tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
-echo "Moving system to $OUTP"
-mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
-echo "Moving vendor to $OUTP"
-mv jasmine_global_images*/images/system.img $OUTP/system.img
- 
-echo "Converting sparse source system image to raw image"
-simg2img $OUTP/system.img $OUTP/systema2.img
-echo "Converting sparse source vendor image to raw image"
-simg2img $OUTP/vendor.img $OUTP/vendora2.img
-echo "Decompressing port system.new.dat.br"
-brotli -j -v -d $OUTP/system.new.dat.br -o $OUTP/system.new.dat
-echo "Decompressing port vendor.new.dat.br"
-brotli -j -v -d $OUTP/vendor.new.dat.br -o $OUTP/vendor.new.dat
-echo "Converting port systm.new.dat to disk image"
-$TOOLS/sdat2img/sdat2img.py $OUTP/system.transfer.list $OUTP/system.new.dat $OUTP/systemport.img
-echo "Converting port vendor.new.dat to disk image"
-$TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUTP/vendorport.img
-echo "Cleaning up unnecessary files from $OUTP"
-rm $OUTP/vendor.img $OUTP/system.img $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
-
-echo "Making directories"
-mkdir $PSYSTEM 
-mkdir $PVENDOR 
-mkdir $SVENDOR 
-mkdir $SSYSTEM 
-echo "Mounting port system to $PSYSTEM"
-mount -o rw,noatime $OUTP/systemport.img $PSYSTEM
-echo "Mounting port vendor to $PVENDOR"
-mount -o rw,noatime $OUTP/vendorport.img $PVENDOR
-echo "Mounting source system to $SSYSTEM"
-mount -o rw,noatime $OUTP/systema2.img $SSYSTEM
-echo "Mounting source vendor to $SVENDOR"
-mount -o rw,noatime $OUTP/vendora2.img $SVENDOR
-
 echo "Patching cache"
 rm -rf $PSYSTEM/cache
 cp -af $SSYSTEM/cache $PSYSTEM/
@@ -330,49 +285,4 @@ echo "Getting romversion and patching updater script"
 ROMVERSION=$(grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
 sed -i "s%DATE%$(date +%d/%m/%Y)%g
 s/ROMVERSION/$ROMVERSION/g" $OUTP/zip/META-INF/com/google/android/updater-script
-echo "Unmounting port system"
-umount $PSYSTEM
-echo "Unmounting port vendor"
-umount $PVENDOR
-echo "Unmounting source system"
-umount $SSYSTEM
-echo "Unmounting source vendor"
-umount $SVENDOR
-echo "Removing mount points"
-rmdir $PSYSTEM
-rmdir $PVENDOR
-rmdir $SSYSTEM
-rmdir $SVENDOR
-echo "Scanning system for errors"
-e2fsck -y -f $OUTP/systemport.img
-echo "Resizing system"
-resize2fs $OUTP/systemport.img 786432
-
-echo "Converting port system to sparse image"
-img2simg $OUTP/systemport.img $OUTP/sparsesystem.img
-rm $OUTP/systemport.img
-echo "Generating DAT files for system"
-$TOOLS/img2sdat/img2sdat.py -v 4 -o $OUTP/zip -p system $OUTP/sparsesystem.img
-rm $OUTP/sparsesystem.img
-echo "Converting port vendor to sparse image"
-img2simg $OUTP/vendorport.img $OUTP/sparsevendor.img
-rm $OUTP/vendorport.img
-echo "Generating DAT files for vendor"
-$TOOLS/img2sdat/img2sdat.py -v 4 -o $OUTP/zip -p vendor $OUTP/sparsevendor.img
-rm $OUTP/sparsevendor.img
-echo "Compressing system.new.dat"
-brotli -j -v -q 6 $OUTP/zip/system.new.dat
-echo "Compressing vendor.new.dat"
-brotli -j -v -q 6 $OUTP/zip/vendor.new.dat
-
-cd $OUTP/zip
-echo "Zipping final ROM"
-zip -ry $OUTP/10_MIUI_12_jasmine_sprout_$ROMVERSION.zip *
-cd $CURRENTDIR
-echo "Removing all unnecessary files"
-rm -rf $OUTP/zip
-chown -hR $CURRENTUSER:$CURRENTUSER $OUTP
-
-rm $OUTP/systema2.img
-rm $OUTP/vendora2.img
 echo "Done!"
