@@ -28,17 +28,6 @@ cp -Raf $CURRENTDIR/zip $OUTP/
 
 echo "Unzipping $PORTZIP"
 unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat.br vendor.new.dat.br
-echo "Unzipping jasmine_global_images"
-tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
-echo "Moving system to $OUTP"
-mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
-echo "Moving vendor to $OUTP"
-mv jasmine_global_images*/images/system.img $OUTP/system.img
- 
-echo "Converting sparse source system image to raw image"
-simg2img $OUTP/system.img $OUTP/systema2.img
-echo "Converting sparse source vendor image to raw image"
-simg2img $OUTP/vendor.img $OUTP/vendora2.img
 echo "Decompressing port system.new.dat.br"
 brotli -j -v -d $OUTP/system.new.dat.br -o $OUTP/system.new.dat
 echo "Decompressing port vendor.new.dat.br"
@@ -60,6 +49,6 @@ mount -o rw,noatime $OUTP/systemport.img $PSYSTEM
 echo "Mounting port vendor to $PVENDOR"
 mount -o rw,noatime $OUTP/vendorport.img $PVENDOR
 echo "Mounting source system to $SSYSTEM"
-mount -o rw,noatime $OUTP/systema2.img $SSYSTEM
+mount -o rw,noatime /home/sebastian1/systema2.img $SSYSTEM
 echo "Mounting source vendor to $SVENDOR"
-mount -o rw,noatime $OUTP/vendora2.img $SVENDOR
+mount -o rw,noatime /home/sebastian1/vendora2.img $SVENDOR
