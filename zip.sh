@@ -27,10 +27,6 @@ rmdir $PSYSTEM
 rmdir $PVENDOR
 rmdir $SSYSTEM
 rmdir $SVENDOR
-echo "Scanning system for errors"
-e2fsck -y -f $OUTP/systemport.img
-echo "Resizing system"
-resize2fs $OUTP/systemport.img 786432
 
 echo "Converting port system to sparse image"
 img2simg $OUTP/systemport.img $OUTP/sparsesystem.img
