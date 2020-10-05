@@ -4,28 +4,24 @@ set_metadata_recursive("/tmp/install", "uid", 0, "gid", 0, "dmode", 0755, "fmode
 set_metadata_recursive("/tmp/install/bin", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0755);
 run_program("/tmp/install/bin/backuptool.sh", "backup", "/dev/block/bootdevice/by-name/system", "ext4");
 ui_print(" ");
-ui_print(" ");
-ui_print("           MIUI 12");
-ui_print(" ");
-ui_print("           ROMVERSION");
-ui_print(" ");
-ui_print("          DATE");
-ui_print(" ");
-ui_print("         By Nebrassy");
-ui_print(" ");
-ui_print("Based on Xiaomi.eu Redmi Note 7 builds");
+ui_print("MIUI 12 For Mi A2");
+ui_print("Incremental version: ROMVERSION");
+ui_print("Android version: 10");
+ui_print("Build date: DATE");
+ui_print("By @retrowallflower");
 ui_print(" ");
 show_progress(0.650000, 0);
-ui_print("Patching system image unconditionally...");
+ui_print("Patching system image...");
 block_image_update("/dev/block/bootdevice/by-name/system", package_extract_file("system.transfer.list"), "system.new.dat.br", "system.patch.dat") ||
   abort("E1001: Failed to update system image.");
-ui_print("Patching vendor image unconditionally...");
+ui_print("Patching vendor image...");
 show_progress(0.100000, 0);
 block_image_update("/dev/block/bootdevice/by-name/vendor", package_extract_file("vendor.transfer.list"), "vendor.new.dat.br", "vendor.patch.dat") ||
   abort("E2001: Failed to update vendor image.");
 show_progress(0.020000, 10);
 run_program("/tmp/install/bin/backuptool.sh", "restore", "/dev/block/bootdevice/by-name/system", "ext4");
 show_progress(0.050000, 5);
+ui_print("Patching boot image...");
 package_extract_file("boot.img", "/dev/block/bootdevice/by-name/boot");
 show_progress(0.200000, 10);
 set_progress(1.000000);
