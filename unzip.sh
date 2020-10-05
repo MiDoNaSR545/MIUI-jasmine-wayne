@@ -21,6 +21,10 @@ mkdir $OUTP
 chown $CURRENTUSER:$CURRENTUSER $OUTP
 echo "Copying zip to $OUTP"
 cp -Raf $CURRENTDIR/zip $OUTP/
+cd /home/sebastian1/MIUI-jasmeme-lavender/tools
+git clone https://github.com/xpirt/img2sdat img2sdat
+git clone https://github.com/xpirt/sdat2img sdat2img
+cd /home/sebastian1/MIUI-jasmeme-lavender
 echo "Unzipping $PORTZIP"
 unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat.br vendor.new.dat.br
 echo "Decompressing port system.new.dat.br"
