@@ -8,23 +8,26 @@ CURRENTDIR=$(dirname "$SCRIPTDIR")
 FILES=$CURRENTDIR/files
 OUTP=$CURRENTDIR/out
 TOOLS=$CURRENTDIR/tools
-
 echo "Fail on all errors enabled"
 set -e
+ROMVERSION=$(grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
+sed -i "s%DATE%$(date +%d/%m/%Y)%g
+s/ROMVERSION/$ROMVERSION/g" $OUTP/zip/META-INF/com/google/android/updater-script
 echo "Unmounting port system"
-umount $PSYSTEM
+sudo umount $PSYSTEM
 echo "Unmounting port vendor"
-umount $PVENDOR
+sudo umount $PVENDOR
 echo "Unmounting source system"
-umount $SSYSTEM
+sudo umount $SSYSTEM
 echo "Unmounting source vendor"
-umount $SVENDOR
+sudo umount $SVENDOR
 echo "Removing mount points"
-rmdir $PSYSTEM
-rmdir $PVENDOR
-rmdir $SSYSTEM
-rmdir $SVENDOR
-
+sudo rmdir $PSYSTEM
+sudo rmdir $PVENDOR
+sudo rmdir $SSYSTEM
+sudo rmdir $SVENDOR
+e2fsck -y -f $OUTP/systemport.img
+resize2fs $OUTP/systemport.img 786432
 echo "Converting port system to sparse image"
 img2simg $OUTP/systemport.img $OUTP/sparsesystem.img
 rm $OUTP/systemport.img
