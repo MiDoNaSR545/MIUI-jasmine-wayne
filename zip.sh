@@ -8,7 +8,7 @@ CURRENTDIR=$(dirname "$SCRIPTDIR")
 FILES=$CURRENTDIR/files
 OUTP=$CURRENTDIR/out
 TOOLS=$CURRENTDIR/tools
-ROMVERSION=$(grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
+ROMVERSION=$(sudo grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
 sed -i "s%DATE%$(date +%d/%m/%Y)%g
 s/ROMVERSION/$ROMVERSION/g" $OUTP/zip/META-INF/com/google/android/updater-script
 echo "Unmounting port system"
