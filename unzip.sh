@@ -35,16 +35,6 @@ echo "Converting port systm.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/system.transfer.list $OUTP/system.new.dat $OUTP/systemport.img
 echo "Converting port vendor.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUTP/vendorport.img
-echo "Unzipping jasmine_global_images"
-tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
-echo "Moving images to $OUTP
-mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
-mv jasmine_global_images*/images/system.img $OUTP/system.img
-rm -rf jasmine_global_images*
-echo "Converting stock system to EXT4 image"
-simg2img $OUTP/system.img $OUTP/systema2.img
-echo "Converting stock vendor to EXT4 image"
-simg2img $OUTP/vendor.img $OUTP/vendora2.img
 echo "Cleaning up unnecessary files from $OUTP"
 rm $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
 echo "Making directories"
