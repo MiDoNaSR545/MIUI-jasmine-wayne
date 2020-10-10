@@ -21,10 +21,10 @@ mkdir $OUTP
 chown $CURRENTUSER:$CURRENTUSER $OUTP
 echo "Copying zip to $OUTP"
 cp -Raf $CURRENTDIR/zip $OUTP/
-cd /home/sebastian1/MIUI-jasmeme-lavender/tools
+cd $TOOLS
 git clone https://github.com/xpirt/img2sdat img2sdat
 git clone https://github.com/xpirt/sdat2img sdat2img
-cd /home/sebastian1/MIUI-jasmeme-lavender
+cd $CURRENTDIR
 echo "Unzipping $PORTZIP"
 unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat.br vendor.new.dat.br
 echo "Decompressing port system.new.dat.br"
@@ -35,6 +35,16 @@ echo "Converting port systm.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/system.transfer.list $OUTP/system.new.dat $OUTP/systemport.img
 echo "Converting port vendor.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUTP/vendorport.img
+echo "Unzipping jasmine_global_images"
+tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
+echo "Moving images to $OUTP
+mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
+mv jasmine_global_images*/images/system.img $OUTP/system.img
+rm -rf jasmine_global_images*
+echo "Converting stock system to EXT4 image"
+simg2img $OUTP/system.img $OUTP/systema2.img
+echo "Converting stock vendor to EXT4 image"
+simg2img $OUTP/vendor.img $OUTP/vendora2.img
 echo "Cleaning up unnecessary files from $OUTP"
 rm $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
 echo "Making directories"
@@ -47,6 +57,6 @@ sudo mount -o rw,noatime $OUTP/systemport.img $PSYSTEM
 echo "Mounting port vendor to $PVENDOR"
 sudo mount -o rw,noatime $OUTP/vendorport.img $PVENDOR
 echo "Mounting source system to $SSYSTEM"
-sudo mount -o rw,noatime /home/sebastian1/systema2.img $SSYSTEM
+sudo mount -o rw,noatime $OUTP/systema2.img $SSYSTEM
 echo "Mounting source vendor to $SVENDOR"
-sudo mount -o rw,noatime /home/sebastian1/vendora2.img $SVENDOR
+sudo mount -o rw,noatime $OUTP/vendora2.img $SVENDOR
