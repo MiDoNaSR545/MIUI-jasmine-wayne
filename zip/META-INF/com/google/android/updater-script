@@ -8,7 +8,6 @@ ui_print("MIUI 12 For Mi A2");
 ui_print("Incremental version: ROMVERSION");
 ui_print("Android version: 10");
 ui_print("Build date: DATE");
-ui_print("By @retrowallflower");
 ui_print(" ");
 show_progress(0.650000, 0);
 ui_print("Patching system image...");
@@ -23,6 +22,5 @@ run_program("/tmp/install/bin/backuptool.sh", "restore", "/dev/block/bootdevice/
 show_progress(0.050000, 5);
 ui_print("Patching boot image...");
 package_extract_file("boot.img", "/dev/block/bootdevice/by-name/boot");
-package_extract_file("splash.img", "/dev/block/bootdevice/by-name/splash");
 show_progress(0.200000, 10);
 set_progress(1.000000);
