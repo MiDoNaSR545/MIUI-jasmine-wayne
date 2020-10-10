@@ -168,12 +168,12 @@ echo "Adding firmware"
 rm -rf $PSYSTEM/system/etc/firmware || true
 cp -Raf $SSYSTEM/system/etc/firmware/* $PVENDOR/firmware/ || true
 echo "Adding libwifi [hal64]"
-cp -f /home/sebastian1/MIUI-jasmeme-lavender/files/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
+cp -f $CURRENTDIR/files/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
 echo "Adding libwifi [hal32]"
-cp -f /home/sebastian1/MIUI-jasmeme-lavender/files/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
+cp -f $CURRENTDIR/files/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
 chmod 644 $PVENDOR/lib/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
