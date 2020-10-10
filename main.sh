@@ -39,7 +39,7 @@ echo "Editing build prop"
 sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /persist.vendor.camera.HAL3.enabled=/c\persist.vendor.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=Mi A2
-/ro.build.id=/c\ro.build.id=MIUI 12 by Nebrassy
+/ro.build.id=/c\ro.build.id=MIUI 12
 /persist.vendor.camera.exif.model=/c\persist.vendor.camera.exif.model=Mi A2
 /ro.product.name=/c\ro.product.name=jasmine
 /ro.product.device=/c\ro.product.device=jasmine_sprout
