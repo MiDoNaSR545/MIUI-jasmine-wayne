@@ -42,11 +42,7 @@ echo "Compressing system.new.dat"
 brotli -j -v -q 6 $OUTP/zip/system.new.dat
 echo "Compressing vendor.new.dat"
 brotli -j -v -q 6 $OUTP/zip/vendor.new.dat
-cp -af /home/sebastian1/MIUI-jasmeme-lavender/files/boot.img /home/sebastian1/MIUI-jasmeme-lavender/out/zip
-cp -af /home/sebastian1/MIUI-jasmeme-lavender/files/splash.img /home/sebastian1/MIUI-jasmeme-lavender/out/zip
-cd /home/sebastian1/MIUI-jasmeme-wayne/files
-unzip splash.zip
-mv -f splash.img home/sebastian1/MIUI-jasmeme-wayne/out/zip
+cp -af $FILES/boot.img $OUTP/zip
 cd $OUTP/zip
 echo "Zipping final ROM"
 zip -ry $OUTP/10_MIUI_12_jasmine_sprout_$ROMVERSION.zip *

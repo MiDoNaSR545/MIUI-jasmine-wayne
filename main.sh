@@ -28,7 +28,7 @@ echo "Editing build prop"
 sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /persist.vendor.camera.HAL3.enabled=/c\persist.vendor.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=MI 6X
-/ro.build.id=/c\ro.build.id=MIUI 12 by Nebrassy
+/ro.build.id=/c\ro.build.id=MIUI 12
 /persist.vendor.camera.exif.model=/c\persist.vendor.camera.exif.model=MI 6X
 /ro.product.name=/c\ro.product.name=wayne
 /ro.product.device=/c\ro.product.device=wayne
@@ -138,12 +138,12 @@ sed -i "469 c\        <version>1.0</version>
 479d" $PVENDOR/etc/vintf/manifest.xml
 rm -rf $PSYSTEM/system/etc/firmware || true
 echo "Patching wifi HAL 64"
-cp -f /home/sebastian1/MIUI-jasmeme-wayne/files/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
+cp -f $FILES/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
 echo "Patching wifi HAL 32"
-cp -f /home/sebastian1/MIUI-jasmeme-wayne/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
+cp -f $FILES/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
 chmod 644 $PVENDOR/lib/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
