@@ -38,12 +38,12 @@ sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=Mi A2
 /ro.build.id=/c\ro.build.id=MIUI 12
 /persist.vendor.camera.exif.model=/c\persist.vendor.camera.exif.model=Mi A2
-/ro.product.name=/c\ro.product.name=jasmine
+/ro.product.name=/c\ro.product.name=jasmine_sprout
 /ro.product.device=/c\ro.product.device=jasmine_sprout
-/ro.build.product=/c\ro.build.product=jasmine
+/ro.build.product=/c\ro.build.product=jasmine_sprout
 /ro.product.system.device=/c\ro.product.system.device=jasmine_sprout
 /ro.product.system.model=/c\ro.product.system.model=Mi A2
-/ro.product.system.name=/c\ro.product.system.name=jasmine
+/ro.product.system.name=/c\ro.product.system.name=jasmine_sprout
 /ro.miui.notch=/c\ro.miui.notch=0
 /sys.paper_mode_max_level=/c\sys.paper_mode_max_level=32
 \$ i sys.tianma_nt36672_offset=12
@@ -54,12 +54,12 @@ sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 sed -i "/ro.build.characteristics=/c\ro.build.characteristics=nosdcard" $PSYSTEM/system/product/build.prop
 sed -i "/ro.miui.has_cust_partition=/c\ro.miui.has_cust_partition=false" $PSYSTEM/system/etc/prop.default
 sed -i "/ro.product.vendor.model=/c\ro.product.vendor.model=Mi A2
-/ro.product.vendor.name=/c\ro.product.vendor.name=jasmine
-/ro.product.vendor.device=/c\ro.product.vendor.device=jasmine" $PVENDOR/build.prop
+/ro.product.vendor.name=/c\ro.product.vendor.name=jasmine_sprout
+/ro.product.vendor.device=/c\ro.product.vendor.device=jasmine_sprout" $PVENDOR/build.prop
 sed -i "/ro.product.odm.device=/c\ro.product.odm.device=jasmine_sprout
 /ro.product.odm.model=/c\ro.product.odm.model=Mi A2
 /ro.product.odm.device=/c\ro.product.odm.device=jasmine_sprout
-/ro.product.odm.name=/c\ro.product.odm.name=jasmine" $PVENDOR/odm/etc/build.prop
+/ro.product.odm.name=/c\ro.product.odm.name=jasmine_sprout" $PVENDOR/odm/etc/build.prop
 echo "Patching firmware"
 rm -rf $PVENDOR/firmware
 cp -Raf $SVENDOR/firmware $PVENDOR/firmware
@@ -165,12 +165,12 @@ echo "Adding firmware"
 rm -rf $PSYSTEM/system/etc/firmware || true
 cp -Raf $SSYSTEM/system/etc/firmware/* $PVENDOR/firmware/ || true
 echo "Adding libwifi [hal64]"
-cp -f $CURRENTDIR/files/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
+cp -f $FILES/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
 echo "Adding libwifi [hal32]"
-cp -f $CURRENTDIR/files/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
+cp -f $FILES/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
 chmod 644 $PVENDOR/lib/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
