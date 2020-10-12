@@ -163,7 +163,6 @@ sed -i "479 c\        <version>1.0</version>
 489d" $PVENDOR/etc/vintf/manifest.xml
 echo "Adding firmware"
 rm -rf $PSYSTEM/system/etc/firmware || true
-cp -Raf $SSYSTEM/system/etc/firmware/* $PVENDOR/firmware/ || true
 echo "Adding libwifi [hal64]"
 cp -f $FILES/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
