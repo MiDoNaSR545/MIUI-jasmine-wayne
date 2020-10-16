@@ -1,20 +1,21 @@
 CURRENTUSER=$1
-sudo apt -y install brotli simg2img git-core zip curl unzip img2simg figlet
+echo "• Updating assets"
+sudo apt -y install brotli simg2img git-core zip curl unzip img2simg figle > /dev/null 2>&1
 cd tools
-git clone https://github.com/xpirt/img2sdat img2sdat
-git clone https://github.com/xpirt/sdat2img sdat2img
+git submodule sync > /dev/null 2>&1
+git submodule update > /dev/null 2>&1
 figlet MIUI-jasmeme
 echo " "
-echo "♦ Verifying assets"
+echo "• Verifying assets"
 if [[ $CURRENTUSER = root ]]
 then
 echo "Don't run as root!" && exit
 fi
-read -p "♦ Enter filename of ROM to be ported" PORTROM
-echo "♦ Running unzip"
-sudo su -c "unzip.sh $PORTROM $CURRENTUSER"
-echo "♦ Running main"
-sudo su -c "main.sh $CURRENTUSER"
-echo "♦ Running zip"
-sudo su -c "zip.sh $CURRENTUSER"
-echo "♦ Finished porting!"
+read -p "• Enter filename of ROM to be ported" PORTROM
+echo "• Running unzip"
+sudo ./unzip.sh $PORTROM
+echo "• Running main"
+sudo ./main.sh
+echo "• Running zip"
+./zip.sh
+echo "• Finished porting!"
