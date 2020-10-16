@@ -8,31 +8,31 @@ CURRENTDIR=$(dirname "$SCRIPTDIR")
 FILES=$CURRENTDIR/files
 OUTP=$CURRENTDIR/out
 TOOLS=$CURRENTDIR/tools
-echo "Fail on all errors: on"
+echo "• Fail on all errors: on"
 set -e
-echo "Patching cache"
+echo "• Patching cache"
 rm -rf $PSYSTEM/cache
 cp -af $SSYSTEM/cache $PSYSTEM/
-echo "Creating addon"
+echo "• Cinating addon"
 mkdir $PSYSTEM/system/addon.d
 setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/addon.d
 chmod 755 $PSYSTEM/system/addon.d
-echo "Fixing bootctl"
+echo "• Fixing bootctl"
 cp -f $FILES/bootctl $PSYSTEM/system/bin/
 chmod 755 $PSYSTEM/system/bin/bootctl
 setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/bin/bootctl
-echo "Patching libs"
+echo "• Patching libs"
 cp -af $SSYSTEM/system/lib/vndk-29/android.hardware.boot@1.0.so $PSYSTEM/system/lib/vndk-29/android.hardware.boot@1.0.so
 cp -af $SSYSTEM/system/lib64/vndk-29/android.hardware.boot@1.0.so $PSYSTEM/system/lib64/vndk-29/android.hardware.boot@1.0.so
 cp -af $SSYSTEM/system/lib64/android.hardware.boot@1.0.so $PSYSTEM/system/lib64/android.hardware.boot@1.0.so
-echo "Adding watermark"
+echo "• Adding watermark"
 cp -af $SVENDOR/etc/MIUI_DualCamera_watermark.png $PVENDOR/etc/MIUI_DualCamera_watermark.png
-echo "Removing updater"
+echo "• Removing updater"
 rm -rf $PSYSTEM/system/priv-app/Updater
-echo "Renaming device features xmls"
+echo "• Renaming device features xmls"
 mv $PSYSTEM/system/etc/device_features/lavender.xml $PSYSTEM/system/etc/device_features/jasmine_sprout.xml
 mv $PVENDOR/etc/device_features/lavender.xml $PVENDOR/etc/device_features/jasmine_sprout.xml
-echo "Editing build prop"
+echo "• Editing build prop"
 sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /persist.vendor.camera.HAL3.enabled=/c\persist.vendor.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=Mi A2
@@ -60,22 +60,21 @@ sed -i "/ro.product.odm.device=/c\ro.product.odm.device=jasmine_sprout
 /ro.product.odm.model=/c\ro.product.odm.model=Mi A2
 /ro.product.odm.device=/c\ro.product.odm.device=jasmine_sprout
 /ro.product.odm.name=/c\ro.product.odm.name=jasmine_sprout" $PVENDOR/odm/etc/build.prop
-echo "Patching firmware"
+echo "• Patching firmware"
 rm -rf $PVENDOR/firmware
-cp -Raf $SVENDOR/firmware $PVENDOR/firmware
-echo "Fixing fstab"
+echo "• Fixing fstab"
 cp -f $FILES/fstab.qcom $PVENDOR/etc/
 chmod 644 $PVENDOR/etc/fstab.qcom
 setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/fstab.qcom
 chown -hR root:root $PVENDOR/etc/fstab.qcom
-echo "Patching hardware boot"
+echo "• Patching hardware boot"
 cp -af $SVENDOR/bin/hw/android.hardware.boot@1.0-service $PVENDOR/bin/hw/android.hardware.boot@1.0-service
 cp -af $SVENDOR/etc/init/android.hardware.boot@1.0-service.rc $PVENDOR/etc/init/android.hardware.boot@1.0-service.rc
 cp -af $SVENDOR/lib/hw/bootctrl.sdm660.so $PVENDOR/lib/hw/bootctrl.sdm660.so
 cp -af $SVENDOR/lib/hw/android.hardware.boot@1.0-impl.so $PVENDOR/lib/hw/android.hardware.boot@1.0-impl.so
 cp -af $SVENDOR/lib64/hw/bootctrl.sdm660.so $PVENDOR/lib64/hw/bootctrl.sdm660.so
 cp -af $SVENDOR/lib64/hw/android.hardware.boot@1.0-impl.so $PVENDOR/lib64/hw/android.hardware.boot@1.0-impl.so
-echo "Editing HAL formatting"
+echo "• Editing HAL formatting"
 sed -i "58 i \    <hal format=\"hidl\">
 58 i \        <name>android.hardware.boot</name>
 58 i \        <transport>hwbinder</transport>
@@ -86,18 +85,18 @@ sed -i "58 i \    <hal format=\"hidl\">
 58 i \        </interface>
 58 i \        <fqname>@1.0::IBootControl/default</fqname>
 58 i \    </hal>" $PVENDOR/etc/vintf/manifest.xml
-echo "Keymaster"
+echo "• Keymaster"
 rm -f $PVENDOR/etc/init/android.hardware.keymaster@4.0-service-qti.rc
 cp -af $SVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc $PVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc
 sed -i "181 s/        <version>4.0<\/version>/        <version>3.0<\/version>/g
 s/4.0::IKeymasterDevice/3.0::IKeymasterDevice/g" $PVENDOR/etc/vintf/manifest.xml
-echo "Adding sensors"
+echo "• Adding sensors"
 rm -rf $PVENDOR/etc/sensors
 cp -Raf $SVENDOR/etc/sensors $PVENDOR/etc/sensors
 cp -af $SVENDOR/etc/camera/camera_config.xml $PVENDOR/etc/camera/camera_config.xml
 cp -af $SVENDOR/etc/camera/csidtg_camera.xml $PVENDOR/etc/camera/csidtg_camera.xml
 cp -af $SVENDOR/etc/camera/csidtg_chromatix.xml $PVENDOR/etc/camera/camera_chromatix.xml
-echo "Patching watermark from vendor"
+echo "• Patching watermark from vendor"
 cp -af $SVENDOR/lib/libMiWatermark.so $PVENDOR/lib/libMiWatermark.so
 cp -af $SVENDOR/lib/libdng_sdk.so $PVENDOR/lib/libdng_sdk.so
 cp -af $SVENDOR/lib/libvidhance_gyro.so $PVENDOR/lib/libvidhance_gyro.so
@@ -105,8 +104,8 @@ cp -af $SVENDOR/lib/libvidhance.so $PVENDOR/lib/
 cp -af $SVENDOR/lib/libmmcamera* $PVENDOR/lib/
 cp -af $SVENDOR/lib64/libmmcamera* $PVENDOR/lib64/
 cp -f $SVENDOR/lib/hw/camera.sdm660.so $PVENDOR/lib/hw/
-echo "Skipping bootanimation removal"
-echo "Parsing device fingerprint"
+echo "• Skipping bootanimation removal"
+echo "• Parsing device fingerprint"
 cp -af $FILES/fingerprint/app/FingerprintExtensionService/FingerprintExtensionService.apk $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
 setfattr -h -n security.selinux -v u:object_r:vendor_app_file:s0 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
 chmod 644 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
@@ -151,7 +150,7 @@ cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout
 cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
 cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout/uinput-fpc.kl
 cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
-echo "Recognizing goodixbiometrics"
+echo "• Recognizing goodixbiometrics"
 sed -i "477 c\        <name>vendor.goodix.hardware.fingerprint</name>" $PVENDOR/etc/vintf/manifest.xml
 sed -i "479 c\        <version>1.0</version>
 481 c\            <name>IGoodixBiometricsFingerprint</name>
@@ -161,19 +160,19 @@ sed -i "479 c\        <version>1.0</version>
 487d
 488d
 489d" $PVENDOR/etc/vintf/manifest.xml
-echo "Adding firmware"
+echo "• Adding firmware"
 rm -rf $PSYSTEM/system/etc/firmware || true
-echo "Adding libwifi [hal64]"
+echo "• Adding libwifi [hal64]"
 cp -f $FILES/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
 chmod 644 $PVENDOR/lib64/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
-echo "Adding libwifi [hal32]"
+echo "• Adding ibwifi [hal32]"
 cp -f $FILES/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
 chmod 644 $PVENDOR/lib/libwifi-hal.so
 chown -hR root:root $PVENDOR/lib/libwifi-hal.so
 setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
-echo "Patching system device features"
+echo "• Patching system device features"
 #system/etc/device_features
 sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
 /battery_capacity_typ/c\    <string name=\"battery_capacity_typ\">3010<\/string>
@@ -184,7 +183,7 @@ sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/b
 /paper_mode_max_level/c\    <float name=\"paper_mode_max_level\">32.0<\/float>
 /paper_mode_min_level/c\    <float name=\"paper_mode_min_level\">0.0<\/float>
 /is_18x9_ratio_screen/c\    <bool name=\"is_18x9_ratio_screen\">true<\/bool>" $PSYSTEM/system/etc/device_features/jasmine_sprout.xml
-echo "Patching vendor device features"
+echo "• Patching vendor device features"
 #vendor/etc/device_features
 sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
 /battery_capacity_typ/c\    <string name=\"battery_capacity_typ\">3010<\/string>
@@ -195,11 +194,11 @@ sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/b
 /paper_mode_max_level/c\    <float name=\"paper_mode_max_level\">32.0<\/float>
 /paper_mode_min_level/c\    <float name=\"paper_mode_min_level\">0.0<\/float>
 /is_18x9_ratio_screen/c\    <bool name=\"is_18x9_ratio_screen\">true<\/bool>" $PVENDOR/etc/device_features/jasmine_sprout.xml
-echo "Fixing audio"
+echo "• Fixing audio"
 #AUDIO
 rm -rf $PVENDOR/etc/acdbdata
 cp -Raf $SVENDOR/etc/acdbdata $PVENDOR/etc/acdbdata
-echo "Adding overlays"
+echo "• Adding overlays"
 #statusbar/corner
 rm -rf $PVENDOR/app/NotchOverlay
 cp -f $FILES/overlay/DevicesOverlay.apk $PVENDOR/overlay/DevicesOverlay.apk
@@ -210,7 +209,7 @@ chown -hR root:root $PVENDOR/overlay/DevicesOverlay.apk
 chown -hR root:root $PVENDOR/overlay/DevicesAndroidOverlay.apk
 setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesOverlay.apk
 setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesAndroidOverlay.apk
-echo "Fixing reading mode"
+echo "• Fixing reading mode"
 #readingmode 
 cp -f $FILES/readingmode/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
 cp -f $FILES/readingmode/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
@@ -220,7 +219,7 @@ chown -hR root:root $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_
 chown -hR root:root $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
 setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
 setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
-echo "Patching init"
+echo "• Patching init"
 #add this to line 452 at $PVENDOR/etc/init/hw/init.qcom.rc
 #    exec_background u:object_r:system_file:s0 -- /system/bin/bootctl mark-boot-successful
 sed -i "452 i \    exec_background u:object_r:system_file:s0 -- /system/bin/bootctl mark-boot-successful" $PVENDOR/etc/init/hw/init.qcom.rc
@@ -230,5 +229,5 @@ sed -i "124 i \
 124 i \
 124 i \    # DT2W node
 124 i \    chmod 0660 /sys/touchpanel/double_tap
-124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.rc
-echo "Done with port editing!"
+124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.c
+echo "• Done editing port"
