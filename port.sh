@@ -11,7 +11,7 @@ if [[ $CURRENTUSER = root ]]
 then
 echo "Don't run as root!" && exit
 fi
-read -p "• Enter filename of ROM to be ported" PORTROM
+read -p "• Enter filename of ROM to be ported: " PORTROM
 echo "• Running unzip"
 sudo ./unzip.sh $PORTROM
 echo "• Running main"
