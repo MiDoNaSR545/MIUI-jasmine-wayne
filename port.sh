@@ -1,6 +1,6 @@
 CURRENTUSER=$1
 echo "• Updating assets"
-sudo apt -y install brotli simg2img git-core zip curl unzip img2simg figle > /dev/null 2>&1
+sudo apt -y install brotli simg2img git-core zip curl unzip img2simg figlet > /dev/null 2>&1
 cd tools
 git submodule sync > /dev/null 2>&1
 git submodule update > /dev/null 2>&1
