@@ -43,7 +43,7 @@ $TOOLS/sdat2img/sdat2img.py $OUTP/system.transfer.list $OUTP/system.new.dat $OUT
 echo "• Converting port vendor.new.dat to disk image"
 $TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUTP/vendorport.img > /dev/null 2>&1
 echo "• Cleaning up unnecessary files from $OUTP"
-$OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
+rm -rf $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
 echo "• Making directories"
 sudo mkdir $PSYSTEM || true
 sudo mkdir $PVENDOR || true
