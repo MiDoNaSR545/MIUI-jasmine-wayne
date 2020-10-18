@@ -2,12 +2,13 @@ SVENDOR=/mnt/vendora2
 SSYSTEM=/mnt/systema2
 PVENDOR=/mnt/vendorport
 PSYSTEM=/mnt/systemport
-CURRENTUSER=$1
+CURRENTUSER=$2
 SCRIPTDIR=$(readlink -f "$0")
 CURRENTDIR=$(dirname "$SCRIPTDIR")
 FILES=$CURRENTDIR/files
 OUTP=$CURRENTDIR/out
 TOOLS=$CURRENTDIR/tools
+PORTZIP=$1
 
 # INIT
 sudo apt -y install figlet > /dev/null 2>&1
