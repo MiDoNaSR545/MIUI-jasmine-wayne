@@ -8,12 +8,66 @@ CURRENTDIR=$(dirname "$SCRIPTDIR")
 FILES=$CURRENTDIR/files
 OUTP=$CURRENTDIR/out
 TOOLS=$CURRENTDIR/tools
-echo "• Fail on all errors: on"
-set -e
+
+# INIT
+sudo apt -y install figlet > /dev/null 2>&1
+figlet MIUI-jasmeme
+echo " "
+echo "• Updating submodules"
+sudo apt -y update > /dev/null 2>&1
+sudo apt -y upgrade > /dev/null 2>&1
+sudo apt -y install cpio brotli simg2img img2simg abootimg git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc unzip zip screen attr ccache libssl-dev schedtool > /dev/null 2>&1
+git clone https://github.com/xpirt/img2sdat $TOOLS/img2sdat
+git clone https://github.com/xpirt/sdat2img $TOOLS/sdat2img
+echo "• Beginning port sequence"
+
+# JASMINE GLOBAL IMAGES
+read -p "• Unzip jasmine_global_images? [Y/N]" JSAM
+if [[ "$JSAM" = "Y" ]]; then
+read -p "• Enter your jasmine_global_images filename: " STOCKTAR
+echo "• Unzipping jasmine_global_images"
+tar --wildcards -xf $STOCKTAR */images/vendor.img */images/system.img
+mv jasmine_global_images*/images/vendor.img $OUTP/vendor.img
+mv jasmine_global_images*/images/system.img $OUTP/system.img
+rm -rf jasmine_global_images*
+echo "• Converting system image to EXT4 image"
+simg2img $OUTP/system.img $CURRENTDIR/systema2.img
+echo "• Converting vendor image to EXT4 image"
+simg2img $OUTP/vendor.img $CURRENTDIR/vendora2.img
+fi
+
+# UNZIP
+echo "• Unzipping $PORTZIP"
+unzip -d $OUTP $PORTZIP system.transfer.list vendor.transfer.list system.new.dat.br vendor.new.dat.br > /dev/null 2>&1
+echo "• Decompressing port system.new.dat.br"
+brotli -j -v -d $OUTP/system.new.dat.br -o $OUTP/system.new.dat
+echo "• Decompressing port vendor.new.dat.br"
+brotli -j -v -d $OUTP/vendor.new.dat.br -o $OUTP/vendor.new.dat
+echo "• Converting port systm.new.dat to disk image"
+$TOOLS/sdat2img/sdat2img.py $OUTP/system.transfer.list $OUTP/system.new.dat $OUTP/systemport.img > /dev/null 2>&1
+echo "• Converting port vendor.new.dat to disk image"
+$TOOLS/sdat2img/sdat2img.py $OUTP/vendor.transfer.list $OUTP/vendor.new.dat $OUTP/vendorport.img > /dev/null 2>&1
+echo "• Cleaning up unnecessary files from $OUTP"
+rm -rf $OUTP/system.new.dat $OUTP/vendor.new.dat $OUTP/system.transfer.list $OUTP/vendor.transfer.list
+echo "• Making directories"
+sudo mkdir $PSYSTEM || true
+sudo mkdir $PVENDOR || true
+sudo mkdir $SVENDOR || true
+sudo mkdir $SSYSTEM || true
+echo "• Mounting port system to $PSYSTEM"
+sudo mount -o rw,noatime $OUTP/systemport.img $PSYSTEM
+echo "• Mounting port vendor to $PVENDOR"
+sudo mount -o rw,noatime $OUTP/vendorport.img $PVENDOR
+echo "• Mounting source system to $SSYSTEM"
+sudo mount -o rw,noatime systema2.img $SSYSTEM
+echo "•Mounting source vendor to $SVENDOR"
+sudo mount -o rw,noatime vendora2.img $SVENDOR
+
+# PORT
 echo "• Patching cache"
 rm -rf $PSYSTEM/cache
 cp -af $SSYSTEM/cache $PSYSTEM/
-echo "• Cinating addon"
+echo "• Creating addon"
 mkdir $PSYSTEM/system/addon.d
 setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/addon.d
 chmod 755 $PSYSTEM/system/addon.d
@@ -231,3 +285,52 @@ sed -i "124 i \
 124 i \    chmod 0660 /sys/touchpanel/double_tap
 124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.c
 echo "• Done editing port"
+
+# ZIP
+echo "• Fetching ROM info"
+ROMVERSION=$(sudo grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
+echo "• Patching updater-script"
+sed -i "s%DATE%$(date +%d/%m/%Y)%g
+s/ROMVERSION/$ROMVERSION/g" $OUTP/zip/META-INF/com/google/android/updater-script
+echo "• Unmounting port system"
+sudo umount $PSYSTEM
+echo "• Unmounting port vendor"
+sudo umount $PVENDOR
+echo "• Unmounting source system"
+sudo umount $SSYSTEM
+echo "• Unmounting source vendor"
+sudo umount $SVENDOR
+echo "• Removing mount points"
+sudo rmdir $PSYSTEM
+sudo rmdir $PVENDOR
+sudo rmdir $SSYSTEM
+sudo rmdir $SVENDOR
+echo "• Checking filesystems"
+e2fsck -y -f $OUTP/systemport.img > /dev/null 2>&1
+echo "• Resizing system to 3.0 G"
+resize2fs $OUTP/systemport.img 786432 > /dev/null 2>&1
+echo "• Converting port system to sparse image"
+img2simg $OUTP/systemport.img $OUTP/sparsesystem.img
+rm $OUTP/systemport.img
+echo "• Generating DAT files for system"
+$TOOLS/img2sdat/img2sdat.py -v 4 -o $OUTP/zip -p system $OUTP/sparsesystem.img > /dev/null 2>&1
+rm $OUTP/sparsesystem.img
+echo "• Converting port vendor to sparse image"
+img2simg $OUTP/vendorport.img $OUTP/sparsevendor.img
+rm $OUTP/vendorport.img
+echo "• Generating DAT files for vendor"
+$TOOLS/img2sdat/img2sdat.py -v 4 -o $OUTP/zip -p vendor $OUTP/sparsevendor.img > /dev/null 2>&1
+rm $OUTP/sparsevendor.img
+echo "• Compressing system.new.dat"
+brotli -j -v -q 6 $OUTP/zip/system.new.dat
+echo "• Compressing vendor.new.dat"
+brotli -j -v -q 6 $OUTP/zip/vendor.new.dat
+cp -af $FILES/boot.img $OUTP/zip
+cd $OUTP/zip
+echo "• Zipping final ROM"
+zip -ry $OUTP/10_MIUI_12_jasmine_sprout_$ROMVERSION.zip * > /dev/null 2>&1
+cd $CURRENTDIR
+echo "• Removing all unnecessary files"
+rm -rf $OUTP/zip
+chown -hR $CURRENTUSER:$CURRENTUSER $OUTP
+
