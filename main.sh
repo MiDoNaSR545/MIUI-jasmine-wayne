@@ -253,7 +253,7 @@ sed -i "124 i \
 124 i \    # DT2W node
 124 i \    chmod 0660 /sys/touchpanel/double_tap
 124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.rc
-echo "• Done editing port"
+read -p "• Done editing port [ENTER to continue]"
 
 # ZIP
 echo "• Fetching ROM info"
