@@ -96,6 +96,14 @@ sudo rm -rf $PSYSTEM/system/app/Joyose
 sudo rm -rf $PSYSTEM/system/app/Health
 sudo rm -rf $PSYSTEM/system/app/Qmmi
 
+# Remove ugly Xiaomi.eu icons and Gboard theme
+echo "• Fixing icon pack"
+sudo rm -rf $PSYSTEM/system/media/theme/miui_mod_icons
+sudo cp -Raf $FILES/miui_mod_icons $PSYSTEM/system/media/theme
+sudo chmod 0644 $PSYSTEM/system/media/theme/miui_mod_icons/*
+echo "• Removing keyboard theme"
+sudo rm -rf $PSYSTEM/system/etc/gboad_theme
+
 # Add libs and watermarks
 echo "• Patching libs"
 sudo cp -af $SSYSTEM/system/lib/vndk-29/android.hardware.boot@1.0.so $PSYSTEM/system/lib/vndk-29/android.hardware.boot@1.0.so
