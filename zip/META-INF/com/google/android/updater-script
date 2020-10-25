@@ -12,8 +12,6 @@ ui_print(" ");
 show_progress(0.650000, 0);
 ui_print("Patching system image...");
 block_image_update("/dev/block/bootdevice/by-name/system", package_extract_file("system.transfer.list"), "system.new.dat.br", "system.patch.dat") ||
-beetch
-/beetch/
   abort("E1001: Failed to update system image.");
 ui_print("Patching vendor image...");
 show_progress(0.100000, 0);
