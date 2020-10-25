@@ -87,6 +87,14 @@ rm -rf $PSYSTEM/system/app/Joyose
 rm -rf $PSYSTEM/system/app/Health
 rm -rf $PSYSTEM/system/app/Qmmi
 
+# Remove ugly Xiaomi.eu icons and Gboard theme
+echo "• Fixing icon pack"
+sudo rm -rf $PSYSTEM/system/media/theme/miui_mod_icons
+sudo cp -Raf $FILES/miui_mod_icons $PSYSTEM/system/media/theme
+sudo chmod 0644 $PSYSTEM/system/media/theme/miui_mod_icons/*
+echo "• Removing keyboard theme"
+sudo rm -rf $PSYSTEM/system/etc/gboad_theme
+
 # Edit build.prop to Mi 6X specs
 echo "• Renaming device features XMLs"
 mv $PSYSTEM/system/etc/device_features/lavender.xml $PSYSTEM/system/etc/device_features/wayne.xml
