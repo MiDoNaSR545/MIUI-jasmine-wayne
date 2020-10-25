@@ -323,7 +323,7 @@ sudo sed -i "124 i \
 124 i \
 124 i \    # DT2W node
 124 i \    chmod 0660 /sys/touchpanel/double_tap
-124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.c
+124 i \    chown system system /sys/touchpanel/double_tap" $PVENDOR/etc/init/hw/init.target.rc
 read -p "• Done editing port [ENTER to continue]" ENTER
 
 # Grep variables and edit updater-script
