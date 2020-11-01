@@ -68,28 +68,28 @@ sudo mount -o rw,noatime vendora2.img $SVENDOR
 
 # Fix Magisk and cam watermarks
 echo "• Creating Magisk addon"
-mkdir $PSYSTEM/system/addon.d
-setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/addon.d
-chmod 755 $PSYSTEM/system/addon.d
+sudo mkdir $PSYSTEM/system/addon.d
+sudo setfattr -h -n security.selinux -v u:object_r:system_file:s0 $PSYSTEM/system/addon.d
+sudo chmod 755 $PSYSTEM/system/addon.d
 echo "• Patching camera watermarks"
-cp -af $SVENDOR/etc/MIUI_DualCamera_watermark.png $PVENDOR/etc/MIUI_DualCamera_watermark.png
+sudo cp -af $SVENDOR/etc/MIUI_DualCamera_watermark.png $PVENDOR/etc/MIUI_DualCamera_watermark.png
 
 #Debloat MIUI and Google Trash @clarencejasmeme
 echo "• Debloating unnecessary apps"
-rm -rf $PSYSTEM/system/priv-app/Updater
-rm -rf $PSYSTEM/system/priv-app/WfdService
-rm -rf $PSYSTEM/system/priv-app/MiRecycle
-rm -rf $PSYSTEM/system/priv-app/MiService
-rm -rf $PSYSTEM/system/app/AutoTest
-rm -rf $PSYSTEM/system/app/MiuiBugReport
-rm -rf $PSYSTEM/system/app/wps_lite
-rm -rf $PSYSTEM/system/app/Joyose
-rm -rf $PSYSTEM/system/app/Health
-rm -rf $PSYSTEM/system/app/Qmmi
+sudo rm -rf $PSYSTEM/system/priv-app/Updater
+sudo rm -rf $PSYSTEM/system/priv-app/WfdService
+sudo rm -rf $PSYSTEM/system/priv-app/MiRecycle
+sudo rm -rf $PSYSTEM/system/priv-app/MiService
+sudo rm -rf $PSYSTEM/system/app/AutoTest
+sudo rm -rf $PSYSTEM/system/app/MiuiBugReport
+sudo rm -rf $PSYSTEM/system/app/wps_lite
+sudo rm -rf $PSYSTEM/system/app/Joyose
+sudo rm -rf $PSYSTEM/system/app/Health
+sudo rm -rf $PSYSTEM/system/app/Qmmi
 
 # Remove ugly Xiaomi.eu icons and Gboard theme
 echo "• Fixing icon pack"
-sudo rm -rf $PSYSTEM/system/media/theme/miui_mod_icons
+sudo sudo rm -rf $PSYSTEM/system/media/theme/miui_mod_icons
 sudo cp -Raf $FILES/miui_mod_icons $PSYSTEM/system/media/theme
 sudo chmod 0644 $PSYSTEM/system/media/theme/miui_mod_icons/*
 echo "• Removing keyboard theme"
@@ -97,10 +97,10 @@ sudo rm -rf $PSYSTEM/system/etc/gboad_theme
 
 # Edit build.prop to Mi 6X specs
 echo "• Renaming device features XMLs"
-mv $PSYSTEM/system/etc/device_features/lavender.xml $PSYSTEM/system/etc/device_features/wayne.xml
-mv $PVENDOR/etc/device_features/lavender.xml $PVENDOR/etc/device_features/wayne.xml
+sudo mv $PSYSTEM/system/etc/device_features/lavender.xml $PSYSTEM/system/etc/device_features/wayne.xml
+sudo mv $PVENDOR/etc/device_features/lavender.xml $PVENDOR/etc/device_features/wayne.xml
 echo "• Editing build prop files"
-sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
+sudo sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 /persist.vendor.camera.HAL3.enabled=/c\persist.vendor.camera.HAL3.enabled=1
 /ro.product.model=/c\ro.product.model=MI 6X
 /ro.build.id=/c\ro.build.id=10 MIUI 12 by Sebastian
@@ -132,8 +132,8 @@ sed -i "/persist.camera.HAL3.enabled=/c\persist.camera.HAL3.enabled=1
 \$ i persist.vendor.camera.mainswitch.threshold=419
 \$ i persist.vendor.camera.expose.aux=1
 /persist.vendor.camera.model=/c\persist.vendor.camera.model=MI 6X" $PSYSTEM/system/build.prop
-sed -i "/ro.build.characteristics=/c\ro.build.characteristics=nosdcard" $PSYSTEM/system/product/build.prop
-sed -i "/ro.product.vendor.model=/c\ro.product.vendor.model=MI 6X
+sudo sed -i "/ro.build.characteristics=/c\ro.build.characteristics=nosdcard" $PSYSTEM/system/product/build.prop
+sudo sed -i "/ro.product.vendor.model=/c\ro.product.vendor.model=MI 6X
 /ro.product.vendor.name=/c\ro.product.vendor.name=wayne
 \$ i persist.vendor.imx376_sunny.low.lux=310
 \$ i persist.vendor.imx376_sunny.light.lux=280
@@ -150,7 +150,7 @@ sed -i "/ro.product.vendor.model=/c\ro.product.vendor.model=MI 6X
 \$ i persist.vendor.camera.mainswitch.threshold=419
 \$ i persist.vendor.camera.expose.aux=1
 /ro.product.vendor.device=/c\ro.product.vendor.device=wayne" $PVENDOR/build.prop
-sed -i "/ro.product.odm.device=/c\ro.product.odm.device=wayne
+sudo sed -i "/ro.product.odm.device=/c\ro.product.odm.device=wayne
 /ro.product.odm.model=/c\ro.product.odm.model=MI 6X
 /ro.product.odm.device=/c\ro.product.odm.device=wayne
 /ro.product.model=/c\ro.product.model=MI 6X
@@ -158,89 +158,89 @@ sed -i "/ro.product.odm.device=/c\ro.product.odm.device=wayne
 
 # Firmware / fstabs
 echo "• Patching vendor firmware"
-rm -rf $PVENDOR/firmware
-cp -Raf $SVENDOR/firmware $PVENDOR/firmware
+sudo rm -rf $PVENDOR/firmware
+sudo cp -Raf $SVENDOR/firmware $PVENDOR/firmware
 #VENDOR
 echo "• Copying fstabs"
-cp -f $FILES/fstab.qcom $PVENDOR/etc/
-chmod 644 $PVENDOR/etc/fstab.qcom
-setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/fstab.qcom
-chown -hR root:root $PVENDOR/etc/fstab.qcom
+sudo cp -f $FILES/fstab.qcom $PVENDOR/etc/
+sudo chmod 644 $PVENDOR/etc/fstab.qcom
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/fstab.qcom
+sudo chown -hR root:root $PVENDOR/etc/fstab.qcom
 #KEYMASTER
 echo "• Keymaster edit"
-rm -f $PVENDOR/etc/init/android.hardware.keymaster@4.0-service-qti.rc
-cp -af $SVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc $PVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc
-sed -i "171 s/        <version>4.0<\/version>/        <version>3.0<\/version>/g
+sudo rm -f $PVENDOR/etc/init/android.hardware.keymaster@4.0-service-qti.rc
+sudo cp -af $SVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc $PVENDOR/etc/init/android.hardware.keymaster@3.0-service-qti.rc
+sudo sed -i "171 s/        <version>4.0<\/version>/        <version>3.0<\/version>/g
 s/4.0::IKeymasterDevice/3.0::IKeymasterDevice/g" $PVENDOR/etc/vintf/manifest.xml
 
 # Add vendor sensors / libs
 echo "• Fixing vendor sensors"
-rm -rf $PVENDOR/etc/sensors
-cp -Raf $SVENDOR/etc/sensors $PVENDOR/etc/sensors
-cp -af $SVENDOR/etc/camera/camera_config.xml $PVENDOR/etc/camera/camera_config.xml
-cp -af $SVENDOR/etc/camera/csidtg_camera.xml $PVENDOR/etc/camera/csidtg_camera.xml
-cp -af $SVENDOR/etc/camera/csidtg_chromatix.xml $PVENDOR/etc/camera/camera_chromatix.xml
-echo "• Parsing vendor libs"
-cp -af $SVENDOR/lib/libMiWatermark.so $PVENDOR/lib/libMiWatermark.so
-cp -af $SVENDOR/lib/libdng_sdk.so $PVENDOR/lib/libdng_sdk.so
-cp -af $SVENDOR/lib/libvidhance_gyro.so $PVENDOR/lib/libvidhance_gyro.so
-cp -af $SVENDOR/lib/libvidhance.so $PVENDOR/lib/
-cp -af $SVENDOR/lib/libmmcamera* $PVENDOR/lib/
-cp -af $SVENDOR/lib64/libmmcamera* $PVENDOR/lib64/
-cp -f $SVENDOR/lib/hw/camera.sdm660.so $PVENDOR/lib/hw/
+sudo rm -rf $PVENDOR/etc/sensors
+sudo cp -Raf $SVENDOR/etc/sensors $PVENDOR/etc/sensors
+sudo cp -af $SVENDOR/etc/camera/camera_config.xml $PVENDOR/etc/camera/camera_config.xml
+sudo cp -af $SVENDOR/etc/camera/csidtg_camera.xml $PVENDOR/etc/camera/csidtg_camera.xml
+sudo cp -af $SVENDOR/etc/camera/csidtg_chromatix.xml $PVENDOR/etc/camera/camera_chromatix.xml
+sudo echo "• Parsing vendor libs"
+sudo cp -af $SVENDOR/lib/libMiWatermark.so $PVENDOR/lib/libMiWatermark.so
+sudo cp -af $SVENDOR/lib/libdng_sdk.so $PVENDOR/lib/libdng_sdk.so
+sudo cp -af $SVENDOR/lib/libvidhance_gyro.so $PVENDOR/lib/libvidhance_gyro.so
+sudo cp -af $SVENDOR/lib/libvidhance.so $PVENDOR/lib/
+sudo cp -af $SVENDOR/lib/libmmcamera* $PVENDOR/lib/
+sudo cp -af $SVENDOR/lib64/libmmcamera* $PVENDOR/lib64/
+sudo cp -f $SVENDOR/lib/hw/camera.sdm660.so $PVENDOR/lib/hw/
 
 # Patch vendor fingerprint files
 echo "• Making device fingerprint"
-cp -af $FILES/fingerprint/app/FingerprintExtensionService/FingerprintExtensionService.apk $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
-setfattr -h -n security.selinux -v u:object_r:vendor_app_file:s0 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
-chmod 644 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
-chown -hR root:root $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
-cp -af $FILES/fingerprint/framework/com.fingerprints.extension.jar $PVENDOR/framework/com.fingerprints.extension.jar
-setfattr -h -n security.selinux -v u:object_r:vendor_framework_file:s0 $PVENDOR/framework/com.fingerprints.extension.jar
-chmod 644 $PVENDOR/framework/com.fingerprints.extension.jar
-chown -hR root:root $PVENDOR/framework/com.fingerprints.extension.jar
-cp -af $FILES/fingerprint/lib64/hw/fingerprint.fpc.default.so $PVENDOR/lib64/hw/fingerprint.fpc.default.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/hw/fingerprint.fpc.default.so
-chmod 644 $PVENDOR/lib64/hw/fingerprint.fpc.default.so
-chown -hR root:root $PVENDOR/lib64/hw/fingerprint.fpc.default.so
-cp -af $FILES/fingerprint/lib64/hw/fingerprint.goodix.default.so $PVENDOR/lib64/hw/fingerprint.goodix.default.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/hw/fingerprint.goodix.default.so
-chmod 644 $PVENDOR/lib64/hw/fingerprint.goodix.default.so
-chown -hR root:root $PVENDOR/lib64/hw/fingerprint.goodix.default.so
-cp -af $FILES/fingerprint/lib64/vendor.qti.hardware.fingerprint@1.0.so $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
-chmod 644 $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
-chown -hR root:root $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
-cp -af $FILES/fingerprint/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
-chmod 644 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
-chown -hR root:root $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
-cp -af $FILES/fingerprint/lib64/libvendor.goodix.hardware.fingerprint@1.0.so $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
-chmod 644 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
-chown -hR root:root $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
-cp -af $FILES/fingerprint/lib64/com.fingerprints.extension@1.0.so $PVENDOR/lib64/com.fingerprints.extension@1.0.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/com.fingerprints.extension@1.0.so
-chmod 644 $PVENDOR/lib64/com.fingerprints.extension@1.0.so
-chown -hR root:root $PVENDOR/lib64/com.fingerprints.extension@1.0.so
-cp -af $FILES/fingerprint/lib64/libgf_ca.so $PVENDOR/lib64/libgf_ca.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libgf_ca.so
-chmod 644 $PVENDOR/lib64/libgf_ca.so
-chown -hR root:root $PVENDOR/lib64/libgf_ca.so
-cp -af $FILES/fingerprint/lib64/libgf_hal.so $PVENDOR/lib64/libgf_hal.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libgf_hal.so
-chmod 644 $PVENDOR/lib64/libgf_hal.so
-chown -hR root:root $PVENDOR/lib64/libgf_hal.so
+sudo cp -af $FILES/fingerprint/app/FingerprintExtensionService/FingerprintExtensionService.apk $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_app_file:s0 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
+sudo chmod 644 $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
+sudo chown -hR root:root $PVENDOR/app/FingerprintExtensionService/FingerprintExtensionService.apk
+sudo cp -af $FILES/fingerprint/framework/com.fingerprints.extension.jar $PVENDOR/framework/com.fingerprints.extension.jar
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_framework_file:s0 $PVENDOR/framework/com.fingerprints.extension.jar
+sudo chmod 644 $PVENDOR/framework/com.fingerprints.extension.jar
+sudo chown -hR root:root $PVENDOR/framework/com.fingerprints.extension.jar
+sudo cp -af $FILES/fingerprint/lib64/hw/fingerprint.fpc.default.so $PVENDOR/lib64/hw/fingerprint.fpc.default.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/hw/fingerprint.fpc.default.so
+sudo chmod 644 $PVENDOR/lib64/hw/fingerprint.fpc.default.so
+sudo chown -hR root:root $PVENDOR/lib64/hw/fingerprint.fpc.default.so
+sudo cp -af $FILES/fingerprint/lib64/hw/fingerprint.goodix.default.so $PVENDOR/lib64/hw/fingerprint.goodix.default.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/hw/fingerprint.goodix.default.so
+sudo chmod 644 $PVENDOR/lib64/hw/fingerprint.goodix.default.so
+sudo chown -hR root:root $PVENDOR/lib64/hw/fingerprint.goodix.default.so
+sudo cp -af $FILES/fingerprint/lib64/vendor.qti.hardware.fingerprint@1.0.so $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
+sudo chmod 644 $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
+sudo chown -hR root:root $PVENDOR/lib64/vendor.qti.hardware.fingerprint@1.0.so
+sudo cp -af $FILES/fingerprint/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
+sudo chmod 644 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
+sudo chown -hR root:root $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0-service.so
+sudo cp -af $FILES/fingerprint/lib64/libvendor.goodix.hardware.fingerprint@1.0.so $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
+sudo chmod 644 $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
+sudo chown -hR root:root $PVENDOR/lib64/libvendor.goodix.hardware.fingerprint@1.0.so
+sudo cp -af $FILES/fingerprint/lib64/com.fingerprints.extension@1.0.so $PVENDOR/lib64/com.fingerprints.extension@1.0.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/com.fingerprints.extension@1.0.so
+sudo chmod 644 $PVENDOR/lib64/com.fingerprints.extension@1.0.so
+sudo chown -hR root:root $PVENDOR/lib64/com.fingerprints.extension@1.0.so
+sudo cp -af $FILES/fingerprint/lib64/libgf_ca.so $PVENDOR/lib64/libgf_ca.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libgf_ca.so
+sudo chmod 644 $PVENDOR/lib64/libgf_ca.so
+sudo chown -hR root:root $PVENDOR/lib64/libgf_ca.so
+sudo cp -af $FILES/fingerprint/lib64/libgf_hal.so $PVENDOR/lib64/libgf_hal.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libgf_hal.so
+sudo chmod 644 $PVENDOR/lib64/libgf_hal.so
+sudo chown -hR root:root $PVENDOR/lib64/libgf_hal.so
 
 # Port system biometrics and keylayout
 echo "• Fixing keylayout"
-cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout/uinput-fpc.kl
-cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
-cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout/uinput-fpc.kl
-cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
+sudo cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout/uinput-fpc.kl
+sudo cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
+sudo cp -af $SSYSTEM/system/usr/keylayout/uinput-fpc.kl $PSYSTEM/system/usr/keylayout/uinput-fpc.kl
+sudo cp -af $SSYSTEM/system/usr/idc/uinput-fpc.idc $PSYSTEM/system/usr/idc/uinput-fpc.idc
 echo "• Editing goodix biometrics"
-sed -i "467 c\        <name>vendor.goodix.hardware.fingerprint</name>" $PVENDOR/etc/vintf/manifest.xml
-sed -i "469 c\        <version>1.0</version>
+sudo sed -i "467 c\        <name>vendor.goodix.hardware.fingerprint</name>" $PVENDOR/etc/vintf/manifest.xml
+sudo sed -i "469 c\        <version>1.0</version>
 471 c\            <name>IGoodixBiometricsFingerprint</name>
 474 c\        <fqname>@1.0::IGoodixBiometricsFingerprint/default</fqname>
 475d
@@ -251,22 +251,21 @@ sed -i "469 c\        <version>1.0</version>
 
 # Add libs / firmware from source 
 echo "• Patching system firmware"
-rm -rf $PSYSTEM/system/etc/firmware || true
-cp -Raf $SSYSTEM/system/etc/firmware/* $PVENDOR/firmware/ || true
+sudo rm -rf $PSYSTEM/system/etc/firmware || true
 echo "• Patching wifi HALs"
-cp -f $FILES/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
-chmod 644 $PVENDOR/lib64/libwifi-hal.so
-chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
-cp -f $FILES/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
-chmod 644 $PVENDOR/lib/libwifi-hal.so
-chown -hR root:root $PVENDOR/lib/libwifi-hal.so
-setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
+sudo cp -f $FILES/libwifi-hal64.so $PVENDOR/lib64/libwifi-hal.so
+sudo chmod 644 $PVENDOR/lib64/libwifi-hal.so
+sudo chown -hR root:root $PVENDOR/lib64/libwifi-hal.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib64/libwifi-hal.so
+sudo cp -f $FILES/libwifi-hal32.so $PVENDOR/lib/libwifi-hal.so
+sudo chmod 644 $PVENDOR/lib/libwifi-hal.so
+sudo chown -hR root:root $PVENDOR/lib/libwifi-hal.so
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_file:s0 $PVENDOR/lib/libwifi-hal.so
 
 # Edit wayne.xml from /system/etc/device_features
 echo "• Editing system device features"
 #system/etc/device_features
-sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
+sudo sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
 /battery_capacity_typ/c\    <string name=\"battery_capacity_typ\">3010<\/string>
 /support_camera_4k_quality/c\    <bool name=\"support_camera_4k_quality\">true<\/bool>
 /bool name=\"is_xiaomi\">/c\    <bool name=\"is_xiaomi\">true<\/bool>
@@ -278,7 +277,7 @@ sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/b
 /is_18x9_ratio_screen/c\    <bool name=\"is_18x9_ratio_screen\">true<\/bool>" $PSYSTEM/system/etc/device_features/wayne.xml
 echo "• Editing vendor device features"
 #vendor/etc/device_features
-sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
+sudo sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/bool>
 /battery_capacity_typ/c\    <string name=\"battery_capacity_typ\">3010<\/string>
 /support_camera_4k_quality/c\    <bool name=\"support_camera_4k_quality\">true<\/bool>
 /bool name=\"is_xiaomi\">/c\    <bool name=\"is_xiaomi\">true<\/bool>
@@ -291,36 +290,36 @@ sed -i "/support_dual_sd_card/c\    <bool name=\"support_dual_sd_card\">true<\/b
 
 #Audio fix
 echo "• Fixing audio"
-rm -rf $PVENDOR/etc/acdbdata
-cp -Raf $SVENDOR/etc/acdbdata $PVENDOR/etc/acdbdata
+sudo rm -rf $PVENDOR/etc/acdbdata
+sudo cp -Raf $SVENDOR/etc/acdbdata $PVENDOR/etc/acdbdata
 
 
 # Overlays
 echo "• Patching overlays and notch"
-rm -rf $PVENDOR/app/NotchOverlay
-cp -f $FILES/overlay/DevicesOverlay.apk $PVENDOR/overlay/DevicesOverlay.apk
-cp -f $FILES/overlay/DevicesAndroidOverlay.apk $PVENDOR/overlay/DevicesAndroidOverlay.apk
-chmod 644 $PVENDOR/overlay/DevicesOverlay.apk
-chmod 644 $PVENDOR/overlay/DevicesAndroidOverlay.apk
-chown -hR root:root $PVENDOR/overlay/DevicesOverlay.apk
-chown -hR root:root $PVENDOR/overlay/DevicesAndroidOverlay.apk
-setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesOverlay.apk
-setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesAndroidOverlay.apk
+sudo rm -rf $PVENDOR/app/NotchOverlay
+sudo cp -f $FILES/overlay/DevicesOverlay.apk $PVENDOR/overlay/DevicesOverlay.apk
+sudo cp -f $FILES/overlay/DevicesAndroidOverlay.apk $PVENDOR/overlay/DevicesAndroidOverlay.apk
+sudo chmod 644 $PVENDOR/overlay/DevicesOverlay.apk
+sudo chmod 644 $PVENDOR/overlay/DevicesAndroidOverlay.apk
+sudo chown -hR root:root $PVENDOR/overlay/DevicesOverlay.apk
+sudo chown -hR root:root $PVENDOR/overlay/DevicesAndroidOverlay.apk
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesOverlay.apk
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_overlay_file:s0 $PVENDOR/overlay/DevicesAndroidOverlay.apk
 
 # Reading mode
 echo "• Fixing reading mode"
-cp -f $FILES/readingmode/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
-cp -f $FILES/readingmode/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
-chmod 644 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
-chmod 644 $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
-chown -hR root:root $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
-chown -hR root:root $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
-setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
-setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
+sudo cp -f $FILES/readingmode/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
+sudo cp -f $FILES/readingmode/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
+sudo chmod 644 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
+sudo chmod 644 $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
+sudo chown -hR root:root $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
+sudo chown -hR root:root $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_jdi_nt36672_fhd_video_mode_dsi_panel.xml
+sudo setfattr -h -n security.selinux -v u:object_r:vendor_configs_file:s0 $PVENDOR/etc/qdcm_calib_data_tianma_nt36672_fhd_video_mode_dsi_panel.xml
 
 # Make last edits
 echo "• Editing wifi firmware"
-sed -i "124 i \
+sudo sed -i "124 i \
 124 i \    # Wifi firmware reload path
 124 i \    chown wifi wifi /sys/module/wlan/parameters/fwpath
 124 i \
@@ -330,6 +329,9 @@ sed -i "124 i \
 read -p "• Done editing port [ENTER to continue]"
 
 # Edit updater-script
+mkdir $OUTP/zip
+cp -Raf $CURRENTDIR/zip/META-INF $OUTP/zip
+cp -Raf $CURRENTDIR/zip/install $OUTP/zip
 echo "• Fetching ROM info"
 ROMVERSION=$(sudo grep ro.system.build.version.incremental= $PSYSTEM/system/build.prop | sed "s/ro.system.build.version.incremental=//g"; )
 echo "• Patching updater-script"
